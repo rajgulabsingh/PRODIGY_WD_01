@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Responsive Navbar with Scroll Effect</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Reset and base styling */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #00aced;
+      --primary-dark: #008bb9;
+      --secondary: #ff6b6b;
+      --dark: #111;
+      --light: #fff;
+      --gray: #f2f2f2;
+      --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    /* Navigation Menu */
+    #navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      color: white;
+      z-index: 1000;
+      transition: var(--transition);
+      padding: 15px 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #navbar.scrolled {
+      background-color: var(--dark);
+      box-shadow: var(--shadow);
+      padding: 10px 0;
+    }
+    
+    /* Color change effect when scrolling */
+    #navbar.color-change {
+      background-color: rgba(0, 172, 237, 0.95);
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--light);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: var(--transition);
+    }
+    
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    .logo span {
+      color: var(--primary);
+    }
+    
+    #navbar.color-change .logo span {
+      color: #fff;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      gap: 30px;
+    }
+
+    .nav-list li a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+      padding: 8px 0;
+    }
+    
+    #navbar.color-change .nav-list li a {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .nav-list li a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background-color: var(--primary);
+      transition: var(--transition);
+      border-radius: 3px;
+    }
+    
+    #navbar.color-change .nav-list li a::after {
+      background-color: white;
+    }
+
+    .nav-list li a:hover {
+      color: var(--primary);
+    }
+    
+    #navbar.color-change .nav-list li a:hover {
+      color: white;
+    }
+
+    .nav-list li a:hover::after,
+    .nav-list li a.active::after {
+      width: 100%;
+    }
+    
+    #navbar.color-change .nav-list li a.active::after {
+      background-color: white;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 172, 237, 0.4);
+    }
+    
+    #navbar.color-change .btn-primary {
+      background-color: white;
+      color: var(--primary);
+    }
+    
+    #navbar.color-change .btn-primary:hover {
+      background-color: var(--gray);
+      color: var(--primary-dark);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+
+    .btn-outline:hover {
+      background-color: white;
+      color: var(--dark);
+      transform: translateY(-3px);
+    }
+    
+    #navbar.color-change .btn-outline {
+      border-color: white;
+    }
+    
+    #navbar.color-change .btn-outline:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.8rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .menu-toggle:hover {
+      transform: rotate(90deg);
+    }
+    
+    #navbar.color-change .menu-toggle {
+      color: white;
+    }
+
+    /* Hero Section */
+    .hero {
+      height: 100vh;
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                  url('https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1400&q=80') no-repeat center center/cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      z-index: 2;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      line-height: 1.2;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero h1 span {
+      color: var(--primary);
+    }
+
+    .hero p {
+      font-size: 1.5rem;
+      margin-bottom: 40px;
+      max-width: 700px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .hero-btn {
+      padding: 15px 35px;
+      font-size: 18px;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .hero-btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 172, 237, 0.4);
+    }
+
+    .hero-btn-secondary {
+      background-color: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+
+    .hero-btn-secondary:hover {
+      background-color: white;
+      color: var(--dark);
+      transform: translateY(-5px);
+    }
+
+    .scroll-down {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+      font-size: 14px;
+      animation: bounce 2s infinite;
+      cursor: pointer;
+    }
+
+    .scroll-down i {
+      font-size: 2rem;
+      margin-bottom: 5px;
+    }
+
+    /* Features Section */
+    .features {
+      padding: 100px 20px;
+      background-color: white;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 60px;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background-color: var(--primary);
+      border-radius: 2px;
+    }
+
+    .section-subtitle {
+      font-size: 1.2rem;
+      color: #666;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background-color: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .feature-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 25px;
+      font-size: 2rem;
+      color: white;
+    }
+
+    .feature-title {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: var(--dark);
+    }
+
+    .feature-text {
+      color: #666;
+    }
+    
+    /* Portfolio Section */
+    .portfolio {
+      padding: 100px 20px;
+      background-color: var(--gray);
+    }
+    
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .portfolio-item {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      height: 300px;
+    }
+    
+    .portfolio-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+    
+    .portfolio-item:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .portfolio-item:hover img {
+      transform: scale(1.1);
+    }
+    
+    .portfolio-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      color: white;
+      transform: translateY(30px);
+      opacity: 0;
+      transition: var(--transition);
+    }
+    
+    .portfolio-item:hover .portfolio-overlay {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .portfolio-overlay h3 {
+      margin-bottom: 10px;
+    }
+    
+    .portfolio-overlay p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Footer */
+    .footer {
+      background-color: var(--dark);
+      color: white;
+      padding: 60px 20px 30px;
+      text-align: center;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-column h3 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 12px;
+    }
+
+    .footer-links a {
+      color: #bbb;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .social-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: #333;
+      border-radius: 50%;
+      color: white;
+      font-size: 1.2rem;
+      transition: var(--transition);
+    }
+
+    .social-links a:hover {
+      background-color: var(--primary);
+      transform: translateY(-5px);
+    }
+
+    .copyright {
+      padding-top: 30px;
+      border-top: 1px solid #333;
+      color: #777;
+      font-size: 0.9rem;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0) translateX(-50%);
+      }
+      40% {
+        transform: translateY(-20px) translateX(-50%);
+      }
+      60% {
+        transform: translateY(-10px) translateX(-50%);
+      }
+    }
+    
+    @keyframes colorPulse {
+      0% { background-color: rgba(0, 0, 0, 0.9); }
+      50% { background-color: rgba(0, 172, 237, 0.95); }
+      100% { background-color: rgba(0, 0, 0, 0.9); }
+    }
+
+    /* Back to top button */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+      z-index: 999;
+      box-shadow: var(--shadow);
+    }
+
+    .back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .back-to-top:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-5px);
+    }
+
+    /* Mobile Navigation */
+    @media (max-width: 992px) {
+      .menu-toggle {
+        display: block;
+      }
+      
+      .nav-list {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background-color: var(--dark);
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        gap: 15px;
+        height: 0;
+        overflow: hidden;
+        transition: var(--transition);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+      }
+      
+      .nav-list.active {
+        height: calc(100vh - 70px);
+      }
+      
+      .hero h1 {
+        font-size: 3rem;
+      }
+      
+      .hero p {
+        font-size: 1.2rem;
+      }
+      
+      .hero-buttons {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      #navbar.color-change .nav-list {
+        background-color: var(--primary);
+      }
+    }
+
+    @media (max-width: 576px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      .nav-buttons {
+        display: none;
+      }
+      
+      .section-title {
+        font-size: 2rem;
+      }
+      
+      .logo {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav id="navbar">
+    <div class="nav-container">
+      <a href="#" class="logo">
+        <i class="fas fa-cube"></i>
+        Web<span>Studio</span>
+      </a>
+      
+      <button class="menu-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <ul class="nav-list">
+        <li><a href="#" class="active">Home</a></li>
+        <li><a href="#features">Services</a></li>
+        <li><a href="#portfolio">Portfolio</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      
+      <div class="nav-buttons">
+        <button class="btn btn-outline">
+          <i class="fas fa-user"></i> Sign In
+        </button>
+        <button class="btn btn-primary">
+          <i class="fas fa-rocket"></i> Get Started
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <h1>Build Your <span>Dream</span> Website</h1>
+      <p>Modern, responsive and fast-loading websites built with passion and precision.</p>
+      
+      <div class="hero-buttons">
+        <button class="hero-btn hero-btn-primary">
+          <i class="fas fa-play-circle"></i> Watch Demo
+        </button>
+        <button class="hero-btn hero-btn-secondary">
+          <i class="fas fa-calendar-check"></i> Schedule a Call
+        </button>
+      </div>
+    </div>
+    
+    <div class="scroll-down" id="scrollDown">
+      <i class="fas fa-chevron-down"></i>
+      <span>Scroll Down</span>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="section-header">
+      <h2 class="section-title">Our Premium Services</h2>
+      <p class="section-subtitle">We provide cutting-edge solutions to help your business thrive in the digital world</p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-laptop-code"></i>
+        </div>
+        <h3 class="feature-title">Web Development</h3>
+        <p class="feature-text">Custom websites built with the latest technologies for optimal performance and user experience.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-mobile-alt"></i>
+        </div>
+        <h3 class="feature-title">Mobile Design</h3>
+        <p class="feature-text">Responsive designs that look stunning on all devices from smartphones to desktops.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3 class="feature-title">Digital Marketing</h3>
+        <p class="feature-text">Comprehensive marketing strategies to boost your online presence and reach your audience.</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Portfolio Section -->
+  <section class="portfolio" id="portfolio">
+    <div class="section-header">
+      <h2 class="section-title">Our Portfolio</h2>
+      <p class="section-subtitle">Check out some of our recent projects</p>
+    </div>
+    
+    <div class="portfolio-grid">
+      <div class="portfolio-item">
+        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=600&q=80" alt="Project 1">
+        <div class="portfolio-overlay">
+          <h3>E-commerce Website</h3>
+          <p>Online shopping platform with advanced filtering</p>
+        </div>
+      </div>
+      
+      <div class="portfolio-item">
+        <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=600&q=80" alt="Project 2">
+        <div class="portfolio-overlay">
+          <h3>Travel App</h3>
+          <p>Mobile application for booking travel experiences</p>
+        </div>
+      </div>
+      
+      <div class="portfolio-item">
+        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" alt="Project 3">
+        <div class="portfolio-overlay">
+          <h3>Fitness Dashboard</h3>
+          <p>Analytics platform for tracking workout progress</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- About Section -->
+  <section class="features" id="about">
+    <div class="section-header">
+      <h2 class="section-title">About Our Team</h2>
+      <p class="section-subtitle">Meet the creative minds behind our success</p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);">
+          <i class="fas fa-user"></i>
+        </div>
+        <h3 class="feature-title">Manohar</h3>
+        <p class="feature-text">Lead Designer with 10+ years of experience creating beautiful user interfaces.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon" style="background: linear-gradient(135deg, #00aced 0%, #008bb9 100%);">
+          <i class="fas fa-code"></i>
+        </div>
+        <h3 class="feature-title">Sunder</h3>
+        <p class="feature-text">Full-stack developer specializing in React, Node.js, and modern web technologies.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon" style="background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);">
+          <i class="fas fa-chart-pie"></i>
+        </div>
+        <h3 class="feature-title">Lakhan</h3>
+        <p class="feature-text">Marketing strategist helping businesses grow through digital channels.</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Contact Section -->
+  <section class="portfolio" id="contact" style="background-color: #fff; padding: 100px 20px;">
+    <div class="section-header">
+      <h2 class="section-title">Contact Us</h2>
+      <p class="section-subtitle">We'd love to hear about your project</p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card" style="text-align: left; padding: 40px;">
+        <h3 class="feature-title" style="margin-bottom: 30px;">Get in Touch</h3>
+        <form>
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Your Name</label>
+            <input type="text" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px;">
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Email Address</label>
+            <input type="email" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px;">
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Message</label>
+            <textarea style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; height: 150px;"></textarea>
+          </div>
+          
+          <button class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 18px;">
+            <i class="fas fa-paper-plane"></i> Send Message
+          </button>
+        </form>
+      </div>
+      
+      <div class="feature-card" style="text-align: left; padding: 40px;">
+        <h3 class="feature-title" style="margin-bottom: 30px;">Contact Information</h3>
+        <div style="margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-start;">
+          <i class="fas fa-map-marker-alt" style="font-size: 1.5rem; color: var(--primary);"></i>
+          <div>
+            <h4 style="margin-bottom: 5px;">Our Location</h4>
+            <p>123 Design Street, Creative City, CA 90210</p>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-start;">
+          <i class="fas fa-phone-alt" style="font-size: 1.5rem; color: var(--primary);"></i>
+          <div>
+            <h4 style="margin-bottom: 5px;">Phone Number</h4>
+            <p>+1 (555) 123-4567</p>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-start;">
+          <i class="fas fa-envelope" style="font-size: 1.5rem; color: var(--primary);"></i>
+          <div>
+            <h4 style="margin-bottom: 5px;">Email Address</h4>
+            <p>info@webstudio.com</p>
+          </div>
+        </div>
+        
+        <div style="margin-top: 40px;">
+          <h4 style="margin-bottom: 15px;">Follow Us</h4>
+          <div class="social-links" style="justify-content: flex-start;">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>WebStudio</h3>
+        <p>Creating digital experiences that inspire and transform businesses.</p>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#features">Services</a></li>
+          <li><a href="#portfolio">Portfolio</a></li>
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Services</h3>
+        <ul class="footer-links">
+          <li><a href="#">Web Development</a></li>
+          <li><a href="#">App Development</a></li>
+          <li><a href="#">UI/UX Design</a></li>
+          <li><a href="#">Digital Marketing</a></li>
+          <li><a href="#">SEO Optimization</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Contact Us</h3>
+        <ul class="footer-links">
+          <li><i class="fas fa-map-marker-alt"></i> 123 Design Street, Creative City</li>
+          <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+          <li><i class="fas fa-envelope"></i> info@webstudio.com</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="copyright">
+      &copy; 2023 WebStudio. All rights reserved.
+    </div>
+  </footer>
+  
+  <!-- Back to top button -->
+  <div class="back-to-top" id="backToTop">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+
+  <script>
+    // Enhanced scroll event for navbar color change
+    window.addEventListener("scroll", function () {
+      const navbar = document.getElementById("navbar");
+      const backToTop = document.getElementById("backToTop");
+      
+      // Calculate scroll position
+      const scrollPosition = window.scrollY;
+      
+      // Add scrolled class when scrolling down
+      if (scrollPosition > 50) {
+        navbar.classList.add("scrolled");
+      } else {
+        navbar.classList.remove("scrolled");
+      }
+      
+      // Add color change effect when scrolling past hero section
+      const heroHeight = document.querySelector('.hero').offsetHeight;
+      if (scrollPosition > heroHeight * 0.6) {
+        navbar.classList.add("color-change");
+      } else {
+        navbar.classList.remove("color-change");
+      }
+      
+      // Show/hide back to top button
+      if (scrollPosition > 300) {
+        backToTop.classList.add("visible");
+      } else {
+        backToTop.classList.remove("visible");
+      }
+    });
+    
+    // Mobile menu toggle
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navList = document.querySelector(".nav-list");
+    
+    menuToggle.addEventListener("click", function() {
+      navList.classList.toggle("active");
+      menuToggle.querySelector("i").classList.toggle("fa-bars");
+      menuToggle.querySelector("i").classList.toggle("fa-times");
+    });
+    
+    // Close mobile menu when clicking a link
+    const navLinks = document.querySelectorAll(".nav-list a");
+    navLinks.forEach(link => {
+      link.addEventListener("click", function() {
+        navList.classList.remove("active");
+        menuToggle.querySelector("i").classList.add("fa-bars");
+        menuToggle.querySelector("i").classList.remove("fa-times");
+      });
+    });
+    
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          window.scrollTo({
+            top: target.offsetTop - 80,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+    
+    // Scroll down button functionality
+    document.getElementById("scrollDown").addEventListener("click", function() {
+      window.scrollTo({
+        top: window.innerHeight - 80,
+        behavior: 'smooth'
+      });
+    });
+    
+    // Back to top functionality
+    document.getElementById("backToTop").addEventListener("click", function() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // Active link highlighting
+    window.addEventListener("scroll", function() {
+      const sections = document.querySelectorAll("section");
+      const navLinks = document.querySelectorAll(".nav-list a");
+      
+      let current = "";
+      
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        
+        if (pageYOffset >= (sectionTop - sectionHeight / 3)) {
+          current = section.getAttribute("id");
+        }
+      });
+      
+      navLinks.forEach(link => {
+        link.classList.remove("active");
+        if (link.getAttribute("href").substring(1) === current) {
+          link.classList.add("active");
+        }
+      });
+    });
+    
+    // Initialize - set active link based on current position
+    window.dispatchEvent(new Event('scroll'));
+  </script>
+
+</body>
+</html>
